@@ -2,7 +2,7 @@ module Structure.Term(Term(..)) where
 
 -- | Most important structure in program.
 -- Represents λ terms after input is processed by PARSER.
--- | Terms are represented internally using De Bruijn indexing.
+-- | Terms are represented internally using De Bruijn indexing (starting from 0).
 data Term = 
     Var Int |
     Abs Term |
@@ -27,16 +27,28 @@ instance Show Term where
 -- etc. ...
 showTerm :: Int -> Term -> String
 showTerm i (Var v)
-            | v > i  = [idx2char (v-i)] -- unbound
-            | v <= i = [idx2char (i-v)] -- bound
-showTerm i (Abs t) = "(\\B"++[(idx2char i)]++"."++(showTerm i t)++")"
-showTerm i (App t1 t2) = "("++(showTerm (i+1) t1)++" "++(showTerm (i+1) t2)++")"
+            | v >= i  = [idx2char (v-i)]        -- unbound
+            | v < i = "B"++[idx2char (i-(v+1))] -- bound
+showTerm i (Abs t)
+            | i == 0 = r
+            | i > 0  = "("++r++")"
+        where r = "\\B"++[(idx2char i)]++"."++(showTerm (i+1) t)
+showTerm i (App t1 t2)
+            | i == 0 = r
+            | i > 0  = "("++r++")"
+        where r = (showTerm i t1)++" "++(showTerm i t2)
 
 -- | Converts char to int. Using it's index in latin alphabet.
 -- | a - 97 in ASCII table.
+-- If char below 97 or above 122 are requested they are mapped to closest in range.
 char2idx :: Char -> Int
-char2idx = ((flip (-)) 97).fromEnum
+char2idx c = 
+    | n < 97 = 0
+    | n >= 97 && n <= 122 = n-97
+    | n > 122 = 25
+    where n = fromEnum c
 
 -- | Does opposite to above.
+-- TODO repeating
 idx2char :: Int -> Char
 idx2char = toEnum.((+) 97)
