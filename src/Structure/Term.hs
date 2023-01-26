@@ -27,12 +27,12 @@ instance Show Term where
 -- etc. ...
 showTerm :: Int -> Term -> String
 showTerm i (Var v)
-            | v >= i  = [idx2char (v-i)]        -- unbound
-            | v < i = "B"++[idx2char (i-(v+1))] -- bound
+            | v >= i  = (idx2char (v-i))        -- unbound
+            | v < i = "B"++(idx2char (i-(v+1))) -- bound
 showTerm i (Abs t)
             | i == 0 = r
             | i > 0  = "("++r++")"
-        where r = "\\B"++[(idx2char i)]++"."++(showTerm (i+1) t)
+        where r = "\\B"++(idx2char i)++"."++(showTerm (i+1) t)
 showTerm i (App t1 t2)
             | i == 0 = r
             | i > 0  = "("++r++")"
@@ -49,6 +49,11 @@ char2idx c =
     where n = fromEnum c
 
 -- | Does opposite to above.
--- TODO repeating
-idx2char :: Int -> Char
-idx2char = toEnum.((+) 97)
+-- | NOTE: While free variables are bounded to a-z nobody says that bounded ones are too.
+-- Following bounded variable naming scheme works as follows:
+-- if x <= 25 -> name(x) in a-z 
+-- else z+name(x-25)
+idx2char :: Int -> String
+idx2char n
+    | n <= 25 = toEnum.((+) 97)
+    | n > 25 = "z"++idx2char(n-25)
