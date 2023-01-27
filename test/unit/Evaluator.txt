@@ -13,6 +13,6 @@
     OUTPUT: 
 
     (λz.z) (λa.a a) (λz.z b)
-    (App (App (Abs(Var0)) (Abs(App(Var 0) (Var 0)))) (Abs (App (Var 0) (Var 2))))
+    (App (App (Abs(Var 0)) (Abs(App(Var 0) (Var 0)))) (Abs (App (Var 0) (Var 2))))
 
-    (App (Abs(App(Abs(App (Abs(Var 1)) (Abs (Var1)))) (Var 0))) (Abs(Abs(Var 3))))
+    (App (Abs(App(Abs(App (Abs(Var 1)) (Abs (Var 1)))) (Var 0))) (Abs(Abs(Var 3))))

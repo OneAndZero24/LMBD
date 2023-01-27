@@ -3,22 +3,18 @@ Napisać program, który pobiera ze standardowego wejścia term rachunku lambda
 
 # TODO
 2. Evaluator
-    - Refactor/Comment
-    - Reducible
-    - Loop detection/Reduce until - eval
     - TEST/Check algorithm
 3. Parser
-    - Implement Token ASSOCIATIVITY
-    - Work on tokens
-    - Implement Shunting Yard & De Bruijn Indices
+    - Implement Shunting Yard
+    - Token ASSOCIATIVITY
     - TEST
 4. Lexer
     - Macros (I = ...)
     - Comments
-    - Syntax check
     - TEST
 5. Main
     - REPL
+    - Eval mode
     - From File (.lmbd)
     - Macro Files (.mlmbd)
     - TEST
