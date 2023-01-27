@@ -13,17 +13,24 @@ import Structure.Term
 -- | One beta reduction step.
 reduce :: Term -> Term
 reduce (Var a) = Var a
-reduce (App (Abs t1) t2) = 
 reduce (Abs t) = Abs (reduce t)
-reduce (App t1 t2) = reduce(App (reduce t1) (reduce t2))
+reduce (App (Abs t1) t2) = subst 1 t1 t2
+reduce (App t1 t2) = App (reduce t1) (reduce t2)
 
--- TODO differentiate reindexing and substitution - putting arguments in
---    (this is worng)
+-- | Application of term to abstraction. Substitutes parameters.
+subst :: Int -> Term -> Term -> Term
+subst i (Var a) nt
+    | a == (i-1) = shiftUp 0 (i-1) nt 
+    | a >= i = Var (a-1)
+    | otherwise = Var a
+subst i (Abs t) nt = Abs (subst (i+1) t nt)
+subst i (App t1 t2) nt = App (subst i t1 nt) (subst i t2 nt)
 
--- | Reindexes variables.
-subst :: Int -> Term -> Term
-subst i (Var a) = (Var (a+i))
-subst i (Abs t) = Abs (subst i t)
-subst i (App t1 t2) = App (subst i t1) (subst i t2)
+shiftUp :: Int -> Int -> Term -> Term
+shiftUp i n (Var a)
+    | a >= i = Var(a+n)
+    | otherwise = Var a
+shiftUp i n (Abs t) = Abs (shiftUp (i+1) n t)
+shiftUp i n (App t1 t2) = App (shiftUp i n t1) (shiftUp i n t2)
 
--- TODO Detect loops
+--TODO eval, loop detection, reduce untill, reducible
