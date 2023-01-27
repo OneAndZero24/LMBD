@@ -51,5 +51,3 @@
 
     INPUT: App (Abs (Abs (App (App (Var 0) (Var 3)) (Abs (Var 5))))) (Abs (App (App (App (Var 0) (Var 0)) (Var 0)) (App (Var 0) (Var 1))))
     OUTPUT: \Ba.(\Bb.((Bb b) (\Bc.c))) \Ba.(((Ba Ba) Ba) (Ba a)) - OK
-
-    TODO Terms show 2.0 tests

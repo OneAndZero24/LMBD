@@ -32,5 +32,3 @@ shiftUp i n (Var a)
     | otherwise = Var a
 shiftUp i n (Abs t) = Abs (shiftUp (i+1) n t)
 shiftUp i n (App t1 t2) = App (shiftUp i n t1) (shiftUp i n t2)
-
---TODO eval, loop detection, reduce untill, reducible
