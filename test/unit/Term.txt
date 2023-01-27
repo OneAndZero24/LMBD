@@ -1,0 +1,55 @@
+1. 
+    Standard: (λx. λy. a x (λu. u x)) (λx. a x)
+    De Bruijn: (λ λ 2 1 (λ 0 2)) (λ 1 0)
+
+    INPUT: App (Abs (Abs (App (App (Var 2) (Var 1)) (Abs (App (Var 0) (Var 2)))))) (Abs (App (Var 1) (Var 0)))
+
+    OUTPUT: \Ba.(\Bb.((a Ba) (\Bc.(Bc Ba)))) \Ba.(a Ba) - OK
+
+2.
+    Standard: λx. λy. x
+    De Bruijn: λ λ 1
+
+    INPUT: Abs (Abs (Var 1))
+
+    OUTPUT: \Ba.(\Bb.Ba) - OK
+
+3.
+    Standard: λx. λy. λz. x z (y z)
+    De Bruijn: λ λ λ 2 0 (1 0)
+
+    INPUT: Abs (Abs (Abs (App (App (Var 2) (Var 0)) (App (Var 1) (Var 0)) )))
+
+    OUTPUT: \Ba.(\Bb.(\Bc.((Ba Bc) (Bb Bc)))) - OK
+
+4.
+    Standard: λz. (λy. y (λx. x)) (λx. z x)
+    De Bruijn: λ (λ 0 (λ 0)) (λ 1 0)
+
+    INPUT: Abs (App (Abs (App (Var 0) (Abs (Var 0)))) (Abs (App (Var 1) (Var 0))))
+
+    OUTPUT: \Ba.((\Bb.(Bb (\Bc.Bc))) (\Bb.(Ba Bb))) - OK
+
+5.
+    Standard: a
+    De Bruijn: 0
+
+    INPUT: Var 0
+
+    OUTPUT: a -OK
+
+6.
+    Standard: (λx.λx.x) (λy.y)
+    De Bruijn: (λ.λ.0) (λ.0)
+
+    INPUT: App (Abs(Abs (Var 0))) (Abs (Var 0))
+    OUTPUT: \Ba.(\Bb.Bb) \Ba.Ba - OK
+
+7.
+    Standard: (λx. (λy. ybλz.(c))) (λy. y y y y a)
+    De Bruijn: (λx. (λy. 0 3 λz.(5))) (λy. 0 0 0 0 1)
+
+    INPUT: App (Abs (Abs (App (App (Var 0) (Var 3)) (Abs (Var 5))))) (Abs (App (App (App (Var 0) (Var 0)) (Var 0)) (App (Var 0) (Var 1))))
+    OUTPUT: \Ba.(\Bb.((Bb b) (\Bc.c))) \Ba.(((Ba Ba) Ba) (Ba a)) - OK
+
+    TODO Terms show 2.0 tests
