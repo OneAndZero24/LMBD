@@ -2,9 +2,6 @@
 Napisać program, który pobiera ze standardowego wejścia term rachunku lambda i zwraca jego postać normalna, o ile taka istnieje. Nalezy przyjąć, ze termy moga zawierać nawiasy, kropkę, ukosnik (w roli lambdy) oraz zmienne reprezentowane literami z zakresu a–z.
 
 # TODO
-1. Unit tests
-    - Terms 2.0 show (scope)
-    - Evaluator
 2. Evaluator
     - Refactor/Comment
     - Reducible
@@ -29,7 +26,9 @@ Napisać program, który pobiera ze standardowego wejścia term rachunku lambda
     - Translate
     - Algorithms
     - Analyze complexity
+    - Runing ghc --make
     - Examples
+    - Full/ Unit Tests
     - Resources
     - Sign
 

@@ -56,4 +56,4 @@ char2idx c
 idx2char :: Int -> String
 idx2char n
     | n <= 25 = [toEnum (n+97)]
-    | n > 25 = "z"++idx2char(n-25)
+    | n > 25 = "z"++idx2char(n-26)
