@@ -8,14 +8,10 @@ Napisać program, który pobiera ze standardowego wejścia term rachunku lambda
     - TEST Token ASSOCIATIVITY 
     - TEST
 4. Lexer
-    - Macros (I = ...) ?
-    - Comments
     - TEST
 5. Main
-    - REPL
     - Eval mode
     - From File (.lmbd)
-    - Macro Files (.mlmbd) ?
     - TEST
 6. Desc.
     - Translate
@@ -26,4 +22,9 @@ Napisać program, który pobiera ze standardowego wejścia term rachunku lambda
     - Full/ Unit Tests
     - Resources
     - Sign
+
+7. Further
+    - Refactor
+    - Macros
+    - Macro files
 

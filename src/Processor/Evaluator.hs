@@ -1,4 +1,4 @@
-module Processor.Evaluator(reduce) where
+module Processor.Evaluator(reduce, reduce2Norm, eval) where
 
 import Structure.Term
 
