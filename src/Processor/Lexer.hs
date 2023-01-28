@@ -11,7 +11,7 @@ checkc (x:xs)
     | x == ' ' = checkc xs
     | x == '(' = checkc xs
     | x == ')' = checkc xs
-    | otherwise = (isaz x)
+    | otherwise = (isaz x) && (checkc xs)
 
 -- | Check if lambda only binds proper variables.
 checklmbd :: String -> Bool
@@ -27,21 +27,28 @@ tokenize :: String -> [Token]
 tokenize [] = []
 tokenize (x:xs)
     | x == ' ' = tokenize xs
-    | x == '(' = [LB]++(tokenize (snd (bracketsplit (xs, []))))++[RB]++(tokenize (fst (bracketsplit (xs, []))))
-    | x /= '\\' = (V x):(tokenize xs) -- variables
-    | otherwise = 
-        if (length d) <= 1
-            then [Lambda (filter isaz b)]++(tokenize d)++(tokenize c)
-            else [Lambda (filter isaz b)]++[LB]++(tokenize d)++[RB]++(tokenize c)
-        where 
-            (a, b) = (lmbdsplit (xs, []))
-            (c, d) = lmbdbody (ltrim a, [])
+    | x == '(' = [LB]++(tokenize (snd (bracketsplit 1 (xs, []))))++[RB]++(tokenize (fst (bracketsplit 1 (xs, []))))
+    | x == '\\' = (fst (lmbd (x:xs)))++(tokenize (snd (lmbd (x:xs))))
+    | otherwise = (V x):(tokenize xs) -- variables
+
+-- | Process lambda
+lmbd :: String -> ([Token], String)
+lmbd ('\\':xs)
+    | (head d) == '(' = (l++[LB]++(tokenize (snd (bracketsplit 1 ((tail a), []))))++[RB], fst (bracketsplit 1 ((tail a), [])))
+    | (head d) == '\\' = (l++[LB]++(fst (lmbd a))++[RB], (snd (lmbd a)))
+    | otherwise = (l++[LB]++(tokenize d)++[RB], c)
+    where
+        (a, b) = (lmbdsplit (xs, []))
+        (c, d) = lmbdbody (ltrim a, [])
+        l = [Lambda (filter isaz b)]
 
 -- | For brackets
-bracketsplit :: (String, String) -> (String, String)
-bracketsplit ([], l) = ([], l)
-bracketsplit ((')':as), l) = (as, l)
-bracketsplit ((a:as), l) = bracketsplit (as, l++[a])  
+bracketsplit :: Int -> (String, String) -> (String, String)
+bracketsplit _ ([], l) = ([], l)
+bracketsplit 1 ((')':as), l) = (as, l)
+bracketsplit i ((')':as), l) = bracketsplit (i-1) (as, l++[')'])
+bracketsplit i (('(':as), l) = bracketsplit (i+1) (as, l++['('])
+bracketsplit i ((a:as), l) = bracketsplit i (as, l++[a])  
 
 -- | Splits lambda body in binding and rest after .
 lmbdsplit :: (String, String) -> (String, String)

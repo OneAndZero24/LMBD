@@ -33,19 +33,33 @@ process = (parse 0 [] Nothing)
 -- Bound variables list - head is latest bound, Left accumulator
 parse :: Int -> [Char] -> Maybe Term -> [Token] -> Term
 parse i bv m [(V c)] = hl m (dbi c i bv)
-parse i bv m ((V c):xs) = hl m (parse i bv (Just v) xs)
+parse i bv m ((V c):xs) = parse i bv (Just (hl m v)) xs
     where v = dbi c i bv
 parse i bv m ((Lambda [l]):[x]) = hl m (Abs(parse (i+1) (l:bv) Nothing [x]))
-parse i bv m ((Lambda [l]):(LB:xs)) = hl m (Abs(parse (i+1) (l:bv) Nothing (LB:xs)))
-parse i bv m ((Lambda [l]):(x:xs)) = hl m (parse i bv (Just (Abs(parse (i+1) (l:bv) Nothing [x]))) xs)
+parse i bv m ((Lambda [l]):(LB:xs)) = 
+    if (length a) == 0
+        then hl m p
+        else parse i bv (Just(hl m p)) a
+    where 
+        (a, b) = select (xs, [])
+        p = Abs(parse (i+1) (l:bv) Nothing b)
+parse i bv m ((Lambda [l]):(x:xs)) = parse i bv (Just (hl m (Abs(parse (i+1) (l:bv) Nothing [x])))) xs
 parse i bv m ((Lambda (l:ls)):[x]) = hl m (Abs(parse (i+1) (l:bv) Nothing ((Lambda ls):[x])))
-parse i bv m ((Lambda (l:ls)):(LB:xs)) = hl m (Abs(parse (i+1) (l:bv) Nothing ((Lambda ls):(LB:xs)) ))
-parse i bv m ((Lambda (l:ls)):(x:xs)) = hl m (parse i bv (Just (Abs(parse (i+1) (l:bv) Nothing ((Lambda ls):[x]) ))) xs)
+parse i bv m ((Lambda (l:ls)):(LB:xs)) =
+    if (length a) == 0
+        then hl m p
+        else parse i bv (Just(hl m p)) a
+    where 
+        (a, b) = select (xs, [])
+        p = Abs(parse (i+1) (l:bv) Nothing ((Lambda ls):([LB]++b++[RB])))
+parse i bv m ((Lambda (l:ls)):(x:xs)) = parse i bv (Just (hl m (Abs(parse (i+1) (l:bv) Nothing ((Lambda ls):[x]) )))) xs
 parse i bv m ((LB):xs) =
     if (length a) == 0
-        then hl m (parse i bv Nothing b)
-        else hl m (parse i bv (Just (parse i bv Nothing b)) a)
-    where (a, b) = select (xs, [])
+        then hl m p
+        else (parse i bv (Just (hl m p)) a)
+    where 
+        (a, b) = select (xs, [])
+        p = parse i bv Nothing b
 
 -- | Helper function, handles Maybe monad.
 hl :: Maybe Term -> Term -> Term
