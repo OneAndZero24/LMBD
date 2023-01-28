@@ -1,7 +1,7 @@
-module Processor.Parser(check, process) where
+module SRC.Processor.Parser(check, process) where
 
-import Structure.Term
-import Structure.Token
+import SRC.Structure.Term
+import SRC.Structure.Token
 
 check :: [Token] -> Bool
 check = (syntax 0 False)

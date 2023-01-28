@@ -1,6 +1,6 @@
-module Processor.Evaluator(reduce, reduce2Norm, eval) where
+module SRC.Processor.Evaluator(reduce, reduce2Norm, eval) where
 
-import Structure.Term
+import SRC.Structure.Term
 
 -- | Core of whole program.
 -- | Reduces given λ term tree to normal-form using simple

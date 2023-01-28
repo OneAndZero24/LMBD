@@ -1,6 +1,6 @@
-module Processor.Lexer(checkc, tokenize) where
+module SRC.Processor.Lexer(checkc, tokenize) where
 
-import Structure.Token
+import SRC.Structure.Token
 
 -- | Checks for unallowed characters
 checkc :: String -> Bool
