@@ -38,16 +38,6 @@ showTerm i (App t1 t2)
     | i > 0  = "("++r++")"
     where r = (showTerm i t1)++" "++(showTerm i t2)
 
--- | Converts char to int. Using it's index in latin alphabet.
--- | a - 97 in ASCII table.
--- If char below 97 or above 122 are requested they are mapped to closest in range.
-char2idx :: Char -> Int
-char2idx c 
-    | n < 97 = 0
-    | n >= 97 && n <= 122 = n-97
-    | n > 122 = 25
-    where n = fromEnum c
-
 -- | Does opposite to above.
 -- | NOTE: While free variables are bounded to a-z nobody says that bounded ones are too.
 -- Following bounded variable naming scheme works as follows:

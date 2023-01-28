@@ -5,18 +5,17 @@ Napisać program, który pobiera ze standardowego wejścia term rachunku lambda
 2. Evaluator
     - TEST/Check algorithm
 3. Parser
-    - Implement Shunting Yard
-    - Token ASSOCIATIVITY
+    - TEST Token ASSOCIATIVITY 
     - TEST
 4. Lexer
-    - Macros (I = ...)
+    - Macros (I = ...) ?
     - Comments
     - TEST
 5. Main
     - REPL
     - Eval mode
     - From File (.lmbd)
-    - Macro Files (.mlmbd)
+    - Macro Files (.mlmbd) ?
     - TEST
 6. Desc.
     - Translate
