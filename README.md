@@ -16,6 +16,7 @@ Then `Parser` parses these tokens into `Term` tree which is evaluated.
 Parsing in `Parser` and `Lexer` is loosely based on normal order parsing algorithm.
 
 ## Compiling
+**src folder name needs to be capitalised in order to compile(don't know why it pushed this way)**
 `ghc --make Main.hs`
 
 ## Running
