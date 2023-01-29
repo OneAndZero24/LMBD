@@ -10,17 +10,15 @@ repl = do
         '>' -> do repl   -- Comment
         '!' -> return () -- Exit
         otherwise -> do
-            if not (checkc l)
-                then do
+            case (tokenize l) of
+                Nothing -> do
                     putStrLn "Syntax error!"
                     repl
-                else do
-                    let t = (tokenize l)
-                    if not (check t) 
-                        then do
+                Just t -> do
+                    case (process t) do
+                        Nothing -> do
                             putStrLn "Syntax error!"
                             repl
-                        else do
-                            let s = (process t)
+                        Just x -> do 
                             print (reduce2Norm s)
                             repl

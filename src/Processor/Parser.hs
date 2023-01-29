@@ -40,15 +40,7 @@ add2Terms x t e =
         Just tx -> ((App tx t), e)
 
 selectBracket :: [Token] -> Maybe ([Token], [Token])
-selectBracket = (curry (bracket 1)) []
-
--- | Brackets
-bracket :: Int -> ([Token], [Token]) -> Maybe ([Token], [Token])
-bracket _ (_, []) = Nothing 
-bracket 1 (l, (RB:xs)) = Just ((reverse l), xs)
-bracket i (l, (RB:xs)) = bracket (i-1) (RB:l, xs)
-bracket i (l, (LB:xs)) = bracket (i+1) (LB:l, xs)
-bracket i (l, (x:xs)) = bracket i (x:l, xs)  
+selectBracket = (curry (bracket LB RB 1)) []
 
 -- | De Bruijn indexing for variable
 dbi :: Int -> [Char] -> Char -> Term
