@@ -4,7 +4,7 @@ Napisać program, który pobiera ze standardowego wejścia term rachunku lambda
 Prelude, System IO, System Environment
 
 # TODO
- - Brackets 
+ - Refactor
  - Comments
 2. Evaluator
     - TEST

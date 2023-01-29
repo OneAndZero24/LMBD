@@ -17,10 +17,10 @@ token [] "" = Just []
 token ts "" = Just (reverse ts)
 token ts ('(':xs) = 
     (selectBracket xs) >>= (\(a, b) -> 
-        let at = (wrap (token [] a)) in
-            case at of
-                Nothing -> Nothing
-                Just t -> concatB (token ts "") (token t b)
+        let at = (concatB (token ts "") (wrap (token [] a)) ) in
+        case at of
+            Nothing -> Nothing
+            Just t -> token (reverse t) b
     )
 token [] ('\\':xs) = lmbd xs 
 token (t:ts) ('\\':xs) = 
