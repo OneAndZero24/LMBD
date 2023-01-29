@@ -1,2 +1,0 @@
-[LB, Lambda ['z'], V 'z', RB, LB, Lambda ['a'], LB, V 'a', V 'a', RB, RB, LB, Lambda ['z'], LB, V 'z', V 'b', RB, RB]
-[LB, Lambda ['x'], LB, V 'x', V 'a', RB, RB, V 'b']

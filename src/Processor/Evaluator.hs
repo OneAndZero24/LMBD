@@ -7,7 +7,8 @@ import SRC.Structure.Term
 -- normal order substitution. If there exists a normal form for a given term,
 -- this strategy is guaranteed to produce it.
 
--- | Greedy evaluator, can loop infinitely.
+-- | Greedy mode eavluation - reduces whenever possible.
+-- | Can lead to infinite calculations.
 eval :: Term -> Term
 eval = until (not.reducible) reduce
 
@@ -19,7 +20,9 @@ reducible (Abs a) = reducible a
 reducible (App a b) = reducible a || reducible b
 
 -- | Reduces to normal form, 
--- stops once terms reduct to themselves.
+-- | Stops once λ term reduces to itself.
+-- Still can loop for eg. on Y combinator 
+-- which actually gets bigger with rewritting. 
 reduce2Norm :: Term -> Term
 reduce2Norm t
     | nt == t = t
@@ -34,10 +37,10 @@ reduce (App (Abs t1) t2) = subst 1 t1 t2 -- substitution
 reduce (App t1 t2) = App (reduce t1) (reduce t2)
 
 -- | Application of term to abstraction.
--- | Performs necessary substitutions and upadtes De Bruijn idices.
+-- | Performs necessary substitutions and updates De Bruijn idices.
 -- | When term is applied to lambda it's substituted for bound variable,
 -- free variable indices get decreased as they get out of lambda.
--- | Parameters: Lambda level (as in term), abstraction, term to substitute
+-- | Parameters: Lambda level, abstraction, λ term to substitute
 subst :: Int -> Term -> Term -> Term
 subst i (Var a) nt
     | a == (i-1) = shiftUp 0 (i-1) nt   -- bound to currently reduced
@@ -46,9 +49,10 @@ subst i (Var a) nt
 subst i (Abs t) nt = Abs (subst (i+1) t nt)
 subst i (App t1 t2) nt = App (subst i t1 nt) (subst i t2 nt)
 
--- | Increases indexes of term substituted to abstraction,
--- Only free terms need to be updated.
--- Parameters: Lambda level (as in term), how deep inserted, term to be updated
+-- | Increases De Bruijn indices of variables in 
+-- term that is being substituted.
+-- | Only free terms need to be updated.
+-- Parameters: Lambda level, how deep inserted, λ term
 shiftUp :: Int -> Int -> Term -> Term
 shiftUp i n (Var a)
     | a >= i = Var(a+n)  -- free

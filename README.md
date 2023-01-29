@@ -4,18 +4,7 @@ Napisać program, który pobiera ze standardowego wejścia term rachunku lambda
 Prelude, System IO, System Environment
 
 # TODO
- - Refactor
- - Comments
-2. Evaluator
-    - TEST
-3. Parser
-    - TEST
-4. Lexer
-    - TEST
-5. Main
-    - Eval mode
-    - From File (.lmbd)
-    - TEST
+
 6. Desc.
     - Translate
     - Algorithms
