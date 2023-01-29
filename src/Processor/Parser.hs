@@ -1,84 +1,60 @@
-module SRC.Processor.Parser(check, process) where
+module SRC.Processor.Parser(parse) where
 
 import SRC.Structure.Term
 import SRC.Structure.Token
 
-check :: [Token] -> Bool
-check = (syntax 0 False)
-
--- | Basic syntax check
--- | Parameters: brackets level, is empty, token list
-syntax :: Int -> Bool -> [Token] -> Bool
-syntax _ _ [] = False                -- Last term has to be V or RB
-syntax _ _ [(Lambda _)] = False      -- Lambda cannot be last term
-syntax _ _ ((Lambda []):xs) = False  -- Lambda has to bind something
-syntax i _ [(V c)] = (isaz c) && (i == 0)
-syntax i e [RB] = (not e) && ((i-1) == 0)
-syntax i _ ((V c):xs) = (isaz c) && (syntax i False xs)
-syntax i _ ((Lambda l):xs) = syntax i False xs
-syntax i _ (LB:xs) = syntax (i+1) True xs
-syntax i e (RB:xs) = 
-    if (ni >= 0)
-        then (not e) && (syntax ni e xs)
-        else False
-    where ni = i-1
-
--- | Wrapper around parse
-process :: [Token] -> Term
-process = (parse 0 [] Nothing)
+-- | Wrapper around parseTerm
+parse :: [Token] -> (Term, Bool) 
+parse = (parseTerm 0 [] Nothing)
 
 -- | Parses token list into Term tree,
 -- also changes variables to De Bruijn representation.
 -- | Parameters: Token List, Lambda level (as in term), 
--- Bound variables list - head is latest bound, Left accumulator
-parse :: Int -> [Char] -> Maybe Term -> [Token] -> Term
-parse i bv m [(V c)] = hl m (dbi c i bv)
-parse i bv m ((V c):xs) = parse i bv (Just (hl m v)) xs
-    where v = dbi c i bv
-parse i bv m ((Lambda [l]):[x]) = hl m (Abs(parse (i+1) (l:bv) Nothing [x]))
-parse i bv m ((Lambda [l]):(LB:xs)) = 
-    if (length a) == 0
-        then hl m p
-        else parse i bv (Just(hl m p)) a
-    where 
-        (a, b) = select (xs, [])
-        p = Abs(parse (i+1) (l:bv) Nothing b)
-parse i bv m ((Lambda [l]):(x:xs)) = parse i bv (Just (hl m (Abs(parse (i+1) (l:bv) Nothing [x])))) xs
-parse i bv m ((Lambda (l:ls)):[x]) = hl m (Abs(parse (i+1) (l:bv) Nothing ((Lambda ls):[x])))
-parse i bv m ((Lambda (l:ls)):(LB:xs)) =
-    if (length a) == 0
-        then hl m p
-        else parse i bv (Just(hl m p)) a
-    where 
-        (a, b) = select (xs, [])
-        p = Abs(parse (i+1) (l:bv) Nothing ((Lambda ls):([LB]++b++[RB])))
-parse i bv m ((Lambda (l:ls)):(x:xs)) = parse i bv (Just (hl m (Abs(parse (i+1) (l:bv) Nothing ((Lambda ls):[x]) )))) xs
-parse i bv m ((LB):xs) =
-    if (length a) == 0
-        then hl m p
-        else (parse i bv (Just (hl m p)) a)
-    where 
-        (a, b) = select (xs, [])
-        p = parse i bv Nothing b
+-- Bound variables list - head is latest bound, Left operand
+parseTerm :: Int -> [Char] -> Maybe Term -> [Token] -> (Term, Bool)
+parseTerm _ _ x [] =
+    case x of
+        Nothing -> ((Var 0), False)
+        Just t -> (t, True)
+parseTerm i bv x ((V c):xs) =          -- Variable
+    (uncurry (add2Terms x)) (parseTerm i bv (Just (dbi i bv c)) xs)
+parseTerm i bv x ((L v):xs) =          -- λ abstraction
+    if e
+        then (uncurry (add2Terms x)) ((Abs it), e)
+        else ((Var 0), False)
+    where (it, e) = parseTerm (i+1) (v:bv) Nothing xs
+parseTerm i bv x (LB:xs) =             -- Brackets
+    case selectBracket xs of
+        Nothing -> ((Var 0), False) -- Bracket missmatch
+        Just (a, b) -> 
+            if e
+                then (uncurry (add2Terms x)) (parseTerm i bv (Just it) b)
+                else ((Var 0), False)
+            where (it, e) = parseTerm i bv Nothing a
+parseTerm _ _ _ _ = ((Var 0), False)   -- Error
 
--- | Helper function, handles Maybe monad.
-hl :: Maybe Term -> Term -> Term
-hl Nothing t = t
-hl (Just t1) t2 = App (t1) (t2)
+add2Terms :: Maybe Term -> Term -> Bool -> (Term, Bool)
+add2Terms x t e =
+    case x of
+        Nothing -> (t, e)
+        Just tx -> ((App tx t), e)
 
--- | Selects until RB
-select :: ([Token], [Token]) -> ([Token], [Token])
-select ([], l) = ([], l)
-select ((LB:as), l) = select (a, l++[LB]++b++[RB]) -- nested brackets
-    where (a, b) = select (as, [])
-select ((RB:as), l) = (as, l)
-select ((a:as), l) = select (as, l++[a])   
+selectBracket :: [Token] -> Maybe ([Token], [Token])
+selectBracket = (curry (bracket 1)) []
+
+-- | Brackets
+bracket :: Int -> ([Token], [Token]) -> Maybe ([Token], [Token])
+bracket _ (_, []) = Nothing 
+bracket 1 (l, (RB:xs)) = Just ((reverse l), xs)
+bracket i (l, (RB:xs)) = bracket (i-1) (RB:l, xs)
+bracket i (l, (LB:xs)) = bracket (i+1) (LB:l, xs)
+bracket i (l, (x:xs)) = bracket i (x:l, xs)  
 
 -- | De Bruijn indexing for variable
-dbi :: Char -> Int -> [Char] -> Term
-dbi c i bv = 
+dbi :: Int -> [Char] -> Char -> Term
+dbi i bv c = 
     if bi == (length bv)
-        then (Var ((char2idx c)+i)) -- free
+        then (Var ((char2Idx c)+i)) -- free
         else (Var bi)               -- bound
     where bi = getBoundIdx c bv
 
@@ -94,8 +70,8 @@ getBoundIdx c (x:xs) =
 -- | Converts char to int. Using it's index in latin alphabet.
 -- | a - 97 in ASCII table.
 -- If char below 97 or above 122 are requested they are mapped to closest in range.
-char2idx :: Char -> Int
-char2idx c 
+char2Idx :: Char -> Int
+char2Idx c 
     | n < 97 = 0
     | n >= 97 && n <= 122 = n-97
     | n > 122 = 25
