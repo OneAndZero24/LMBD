@@ -4,10 +4,12 @@ Napisać program, który pobiera ze standardowego wejścia term rachunku lambda
 Prelude, System IO, System Environment
 
 # TODO
+ - Brackets 
+ - Comments
 2. Evaluator
-    - TEST/Check algorithm
+    - TEST
 3. Parser
-    - TEST/Check associativity
+    - TEST
 4. Lexer
     - TEST
 5. Main
@@ -25,7 +27,6 @@ Prelude, System IO, System Environment
     - Sign
 
 7. Further
-    - Refactor
     - Macros
     - Macro files
 

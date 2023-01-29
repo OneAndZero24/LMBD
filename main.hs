@@ -14,11 +14,12 @@ repl = do
                 Nothing -> do
                     putStrLn "Syntax error!"
                     repl
-                Just t -> do
-                    case (process t) do
-                        Nothing -> do
+                (Just t) -> do
+                    if not e
+                        then do
                             putStrLn "Syntax error!"
                             repl
-                        Just x -> do 
-                            print (reduce2Norm s)
+                        else do 
+                            print (reduce2Norm x)
                             repl
+                    where (x, e) = parse t

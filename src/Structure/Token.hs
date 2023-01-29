@@ -7,7 +7,7 @@ data Token =
     L Char  |
     LB      |
     RB
-    deriving Show -- for debug
+    deriving (Eq, Show) -- for debug
 
 -- | Application is left associative.
 -- | Abstraction is right associative.
@@ -18,9 +18,15 @@ isaz c = (n >= 97) && (n <= 122)
     where n = fromEnum c
 
 -- | Brackets
-bracket :: a => a -> a -> Int -> ([a], [a]) -> Maybe ([a], [a])
-bracket _ (_, []) = Nothing 
-bracket lb rb 1 (l, (rb:xs)) = Just ((reverse l), xs)
-bracket lb rb i (l, (rb:xs)) = bracket lb rb (i-1) (rb:l, xs)
-bracket lb rb i (l, (lb:xs)) = bracket lb rb (i+1) (lb:l, xs)
-bracket lb rb i (l, (x:xs)) = bracket lb rb i (x:l, xs)
+bracket :: Eq a => a -> a -> Int -> ([a], [a]) -> Maybe ([a], [a])
+bracket _ _ _ (_, []) = Nothing 
+bracket lb rb i (l, (x:xs)) =
+    if x == lb
+        then bracket lb rb (i+1) (lb:l, xs)
+        else
+            if x == rb
+                then
+                    if i == 1
+                        then Just ((reverse l), xs)
+                        else bracket lb rb (i-1) (rb:l, xs)
+                else bracket lb rb i (x:l, xs)
